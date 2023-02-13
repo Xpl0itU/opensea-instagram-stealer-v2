@@ -10,8 +10,10 @@
     "dotenv": "^16.0.3",
     "imgur": "^2.2.0",
     "instagram-graph-api": "^5.0.0",
-    "jimp": "^0.22.4",
     "puppeteer": "^19.7.0",
+    "puppeteer-core": "^19.7.0",
+    "puppeteer-extra": "^3.3.4",
+    "puppeteer-extra-plugin-stealth": "^2.11.1",
     "tslib": "^2.5.0"
   }
 }

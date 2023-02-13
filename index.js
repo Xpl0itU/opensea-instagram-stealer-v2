@@ -1,12 +1,40 @@
 const fs = require("fs");
 const { ImgurClient } = require('imgur');
 const instagram_upload = require("./instagram_upload");
-const Jimp = require("jimp");
-const puppeteer = require("puppeteer");
+const { executablePath } = require('puppeteer');
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const util = require('util');
+const sleep = util.promisify(setTimeout);
+
+async function countdown(seconds) {
+    while (seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        const timer = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        process.stdout.write(`\r${timer}`);
+        await sleep(1000);
+        seconds -= 1;
+    }
+    console.log('');
+}
 
 async function scrape() {
-    const browser = await puppeteer.launch({headless: false});
-    const page = await browser.newPage();
+    puppeteer.use(StealthPlugin());
+    const browser = await puppeteer.launch({headless: true, executablePath: executablePath()});
+    const page = (await browser.pages())[0];
+    await page.setViewport({
+        width: 1920,
+        height: 1280,
+        deviceScaleFactor: 1,
+    });
+    await page.setExtraHTTPHeaders({ 
+		'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36', 
+		'upgrade-insecure-requests': '1', 
+		'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8', 
+		'accept-encoding': 'gzip, deflate, br', 
+		'accept-language': 'en-US,en;q=0.9,en;q=0.8' 
+	});
     await page.goto('https://opensea.io/assets');
 
     const element = await page.waitForSelector("main#main>div>div>div>div>div:nth-of-type(3)>div:nth-of-type(3)>div:nth-of-type(3)>div>div:nth-of-type(3)>article>a>div>div>div>div>div>span>img");
@@ -20,10 +48,6 @@ async function scrape() {
     await imageSelector.dispose();
     await element.dispose();
     await browser.close();
-
-    const image = await Jimp.read("to_upload.jpeg");
-    image.quality(100).write("to_upload_converted.jpeg");
-    fs.unlinkSync("to_upload.jpeg");
 }
 
 function onSuccess() {
@@ -35,16 +59,15 @@ function onError(error) {
     console.log(error);
 }
 
-(async () => {
+async function scrapeAndUpload() {
     require('dotenv').config();
     await scrape();
     const client = new ImgurClient({ clientId: process.env.IMGUR_CLIENT_ID });
     const response = await client.upload({
-        image: fs.createReadStream('to_upload_converted.jpeg'),
+        image: fs.createReadStream('./to_upload.jpeg'),
         type: 'stream',
-      });
+    });
     const imgurImgUrl = response.data.link;
-    console.log(imgurImgUrl);
     const dots = `•\n•\n•\n•\n•`;
     const captions = [
         "#nfts #nft #nftart #nftcommunity #nftcollector #nftartist #crypto #digitalart #cryptoart #art #ethereum #opensea #nftcollectors #blockchain #nftdrop #cryptocurrency #nftcollectibles #bitcoin #openseanft #nftcollection #cryptoartist #nftartists #eth #nftartgallery #artist #metaverse #nftartwork #artwork #d #artoftheday",
@@ -60,5 +83,16 @@ function onError(error) {
     ];
     const captionEncoded = `For more follow @recent.nft\n${dots}\n${captions[Math.floor(Math.random() * captions.length)]}`;
 
-    instagram_upload.uploadtoInstagram(process.env.INSTAGRAM_TOKEN, process.env.INSTAGRAM_USER_ID, "https://i.imgur.com/YYB8Q5h.jpg", captionEncoded, onSuccess, onError);
+    instagram_upload.uploadtoInstagram(process.env.INSTAGRAM_TOKEN, process.env.INSTAGRAM_USER_ID, imgurImgUrl, captionEncoded, onSuccess, onError);
+}
+(async () => {
+    while(true) {
+        try {
+            await scrapeAndUpload();
+        } catch {
+            console.error("Error uploading image")
+        } finally {
+            await countdown(3600);
+        }
+    }
 })();
