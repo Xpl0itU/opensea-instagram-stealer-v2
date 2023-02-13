@@ -1,0 +1,5 @@
+node_modules
+yarn.lock
+.env
+to_upload.jpeg
+to_upload_converted.jpeg

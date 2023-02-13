@@ -1,0 +1,17 @@
+{
+  "name": "opensea-instagram-stealer",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "main": "index.js",
+  "license": "GPLv3",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "imgur": "^2.2.0",
+    "instagram-graph-api": "^5.0.0",
+    "jimp": "^0.22.4",
+    "puppeteer": "^19.7.0",
+    "tslib": "^2.5.0"
+  }
+}
