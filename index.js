@@ -82,7 +82,7 @@ function onSuccess() {
     currentdate.getMinutes() +
     ":" +
     currentdate.getSeconds();
-  Hook.success("Success!", "Image successfully uploaded at "`${datetime}`);
+  Hook.success("Success!", "Image successfully uploaded at " + `${datetime}`);
 }
 
 function onError(error) {
@@ -100,7 +100,7 @@ function onError(error) {
     currentdate.getMinutes() +
     ":" +
     currentdate.getSeconds();
-  Hook.err("Error!", "Error uploading image at "`${datetime}`);
+  Hook.err("Error!", "Error uploading image at " + `${datetime}`);
 }
 
 async function scrapeAndUpload() {
@@ -139,7 +139,9 @@ async function scrapeAndUpload() {
   );
 }
 (async () => {
-  while (true) {
+  require("dotenv").config();
+  onError("Generic error");
+  /*while (true) {
     try {
       await scrapeAndUpload();
     } catch {
@@ -148,5 +150,5 @@ async function scrapeAndUpload() {
     } finally {
       await countdown(3600);
     }
-  }
+  }*/
 })();
