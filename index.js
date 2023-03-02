@@ -139,9 +139,7 @@ async function scrapeAndUpload() {
   );
 }
 (async () => {
-  require("dotenv").config();
-  onError("Generic error");
-  /*while (true) {
+  while (true) {
     try {
       await scrapeAndUpload();
     } catch {
@@ -150,5 +148,5 @@ async function scrapeAndUpload() {
     } finally {
       await countdown(3600);
     }
-  }*/
+  }
 })();
