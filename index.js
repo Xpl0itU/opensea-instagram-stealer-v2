@@ -144,6 +144,7 @@ async function scrapeAndUpload() {
       await scrapeAndUpload();
     } catch {
       console.error("Error uploading image");
+      onError("Generic error");
     } finally {
       await countdown(3600);
     }
