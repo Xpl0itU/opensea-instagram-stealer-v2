@@ -82,7 +82,10 @@ function onSuccess() {
     currentdate.getMinutes() +
     ":" +
     currentdate.getSeconds();
-  Hook.success("Success!", "Image successfully uploaded at " + `${datetime}`);
+  Hook.success(
+    "Opensea Instagram Stealer Bot",
+    "Image successfully uploaded at " + `${datetime}`
+  );
 }
 
 function onError(error) {
@@ -100,7 +103,10 @@ function onError(error) {
     currentdate.getMinutes() +
     ":" +
     currentdate.getSeconds();
-  Hook.err("Error!", "Error uploading image at " + `${datetime}`);
+  Hook.err(
+    "Opensea Instagram Stealer Bot",
+    "Error uploading image at " + `${datetime}`
+  );
 }
 
 async function scrapeAndUpload() {
